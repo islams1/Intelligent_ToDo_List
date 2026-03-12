@@ -5,21 +5,22 @@ import uuid
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 from utils.logger import logger, CAIRO_TZ
+from config import config
 
 SCOPES = ['https://www.googleapis.com/auth/calendar']
-SERVICE_ACCOUNT_FILE = 'credentials.json'
 
 # الإيميل المستهدف (التقويم الرئيسي)
-CALENDAR_ID = 'islam.sherif243@gmail.com'
+CALENDAR_ID = ''
 
 def add_event_to_google(task_obj):
     """إضافة حدث للتقويم مع دعم مرن لصيغ التاريخ"""
-    if not os.path.exists(SERVICE_ACCOUNT_FILE):
-        logger.error("❌ Google Calendar: credentials.json not found!")
+    credentials_data = config.GOOGLE_CREDENTIALS
+    if not credentials_data:
+        logger.error("❌ Google Calendar: Google credentials not found in environment variables!")
         return None
 
     try:
-        creds = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+        creds = Credentials.from_service_account_info(credentials_data, scopes=SCOPES)
         service = build('calendar', 'v3', credentials=creds)
 
         # 1. معالجة التوقيت بمرونة (Fix: Handle multiple date formats)
@@ -119,7 +120,12 @@ def delete_event_from_google(calendar_id):
         return False
 
     try:
-        creds = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+        credentials_data = config.GOOGLE_CREDENTIALS
+        if not credentials_data:
+            logger.error("❌ Google Calendar: Google credentials not found!")
+            return False
+            
+        creds = Credentials.from_service_account_info(credentials_data, scopes=SCOPES)
         service = build('calendar', 'v3', credentials=creds)
 
         service.events().delete(

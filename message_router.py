@@ -16,7 +16,7 @@ from google_sync.google_sheets import sync_sqlite_to_sheets, get_sheet_url
 from utils.email_sender import send_approval_email
 
 # --- إعدادات Google Gemini ---
-GOOGLE_API_KEY = "AIzaSyDtcgdabbcuETcggF9EwzyI19KTqn88Qp0" 
+GOOGLE_API_KEY = "" 
 
 genai.configure(api_key=GOOGLE_API_KEY)
 # نستخدم موديل فلاش لأنه سريع وذكي في التحويلات الرياضية للتواريخ

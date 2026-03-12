@@ -3,9 +3,9 @@ from oauth2client.service_account import ServiceAccountCredentials
 from database.db_manager import get_all_meetings
 import json
 from utils.logger import logger # ✅ إضافة اللوجر الموحد
+from config import config
 
-SHEET_NAME = "todo" 
-CREDENTIALS_FILE = 'credentials.json'
+SHEET_NAME = "todo"
 
 # متغير لتخزين الرابط (Caching)
 CACHED_SHEET_URL = None
@@ -19,7 +19,12 @@ def get_auth_client():
         "https://www.googleapis.com/auth/drive"
     ]
     try:
-        creds = ServiceAccountCredentials.from_json_keyfile_name(CREDENTIALS_FILE, scope)
+        credentials_data = config.GOOGLE_CREDENTIALS
+        if not credentials_data:
+            logger.error("❌ Google Sheets: Google credentials not found in environment variables!")
+            return None
+            
+        creds = ServiceAccountCredentials.from_json_keyfile_dict(credentials_data, scope)
         return gspread.authorize(creds)
     except Exception as e:
         logger.error(f"❌ Google Sheets Auth Error: {e}")

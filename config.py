@@ -1,4 +1,5 @@
 import os
+import json
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -15,12 +16,30 @@ class Config:
     DB_NAME = os.getenv('DB_NAME', 'database/smart_ecosystem.db')
     
     # Google APIs Configuration
+    GOOGLE_SERVICE_ACCOUNT_JSON = os.getenv('GOOGLE_SERVICE_ACCOUNT_JSON', '')
     GOOGLE_CREDENTIALS_PATH = os.getenv('GOOGLE_CREDENTIALS_PATH', 'credentials.json')
+    
+    @property
+    def GOOGLE_CREDENTIALS(self):
+        """Get Google credentials from environment variable or file"""
+        if self.GOOGLE_SERVICE_ACCOUNT_JSON:
+            try:
+                return json.loads(self.GOOGLE_SERVICE_ACCOUNT_JSON)
+            except json.JSONDecodeError:
+                print("Warning: Invalid JSON in GOOGLE_SERVICE_ACCOUNT_JSON")
+                return None
+        elif os.path.exists(self.GOOGLE_CREDENTIALS_PATH):
+            with open(self.GOOGLE_CREDENTIALS_PATH, 'r') as f:
+                return json.load(f)
+        return None
     
     # Server Configuration
     HOST = os.getenv('HOST', '0.0.0.0')
     PORT = int(os.getenv('PORT', 8000))
     DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
+    
+    # Base URL for email links
+    BASE_URL = os.getenv('BASE_URL', 'http://localhost:8000')
     
     # Timezone Configuration
     TIMEZONE = os.getenv('TIMEZONE', 'Africa/Cairo')
@@ -30,6 +49,9 @@ class Config:
     SMTP_PORT = int(os.getenv('SMTP_PORT', 587))
     EMAIL_USER = os.getenv('EMAIL_USER', '')
     EMAIL_PASSWORD = os.getenv('EMAIL_PASSWORD', '')
+    
+    # Google Gemini API Configuration
+    GOOGLE_GEMINI_API_KEY = os.getenv('GOOGLE_GEMINI_API_KEY', '')
     
     # OpenAI Configuration
     OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', '')

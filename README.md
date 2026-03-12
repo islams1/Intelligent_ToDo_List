@@ -71,7 +71,6 @@ Smart-Meeting-Assistant/
 ├── bot.py                    # Telegram bot
 ├── message_router.py         # Message routing
 ├── check_models.py           # Model checking
-├── credentials.json          # Google APIs credentials
 └── requirements.txt          # Dependencies
 ```
 
@@ -122,8 +121,8 @@ pip install -r requirements.txt
 ```bash
 # 1. Create project in Google Cloud Console
 # 2. Enable Google Calendar API & Google Sheets API  
-# 3. Create Service Account and download credentials.json
-# 4. Place file in root directory
+# 3. Create Service Account and add credentials to .env
+# 4. Configure environment variables
 ```
 
 ### 4. Environment Variables Setup
@@ -245,7 +244,7 @@ python bot.py
 
 ### Common Issues:
 1. **FFmpeg not found**: Check correct path
-2. **Google APIs not working**: Verify credentials.json
+2. **Google APIs not working**: Verify environment variables
 3. **Bot not responding**: Verify Token correctness
 4. **Database locked**: Close overlapping processes
 
@@ -291,7 +290,7 @@ cp .env.example .env
 ### Required Variables:
 - `TELEGRAM_BOT_TOKEN` - Your Telegram bot token from @BotFather
 - `FFMPEG_BIN_PATH` - Path to FFmpeg binary directory
-- `GOOGLE_CREDENTIALS_PATH` - Path to Google credentials JSON file
+- `GOOGLE_SERVICE_ACCOUNT_JSON` - Google service account credentials as JSON string
 
 ### Optional Variables:
 - `HOST` - Server host (default: 0.0.0.0)

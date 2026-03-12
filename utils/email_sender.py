@@ -1,13 +1,7 @@
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-
-# إعدادات بريدك (يفضل وضعها في .env)
-SMTP_SERVER = "smtp.gmail.com"
-SMTP_PORT = 587
-SENDER_EMAIL = "islam.sherif243@gmail.com"
-SENDER_PASSWORD = "eboc xtae fwtr gsmh" # App Password وليس كلمة السر العادية
-BASE_URL = "https://attentional-overintellectually-ximena.ngrok-free.dev" # ⚠️ هام: هذا الرابط لازم يكون Ngrok أو سيرفر حقيقي
+from config import config
 
 def send_approval_email(task_id, task_details, is_conflict=False):
     subject = f"🔔 Action Required: New Meeting Request ({task_details['type']})"
@@ -15,8 +9,8 @@ def send_approval_email(task_id, task_details, is_conflict=False):
         subject = f"⚠️ CONFLICT ALERT: Meeting Request Override"
 
     # روابط الموافقة والرفض
-    accept_url = f"{BASE_URL}/approve_meeting?id={task_id}&force={str(is_conflict).lower()}"
-    reject_url = f"{BASE_URL}/reject_meeting?id={task_id}"
+    accept_url = f"{config.BASE_URL}/approve_meeting?id={task_id}&force={str(is_conflict).lower()}"
+    reject_url = f"{config.BASE_URL}/reject_meeting?id={task_id}"
 
     html_content = f"""
     <html>
@@ -39,16 +33,16 @@ def send_approval_email(task_id, task_details, is_conflict=False):
 
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
-    msg["From"] = SENDER_EMAIL
-    msg["To"] = SENDER_EMAIL # يرسل للأدمن (أنت)
+    msg["From"] = config.EMAIL_USER
+    msg["To"] = config.EMAIL_USER  # يرسل للأدمن (أنت)
 
     msg.attach(MIMEText(html_content, "html"))
 
     try:
-        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+        server = smtplib.SMTP(config.SMTP_SERVER, config.SMTP_PORT)
         server.starttls()
-        server.login(SENDER_EMAIL, SENDER_PASSWORD)
-        server.sendmail(SENDER_EMAIL, SENDER_EMAIL, msg.as_string())
+        server.login(config.EMAIL_USER, config.EMAIL_PASSWORD)
+        server.sendmail(config.EMAIL_USER, config.EMAIL_USER, msg.as_string())
         server.quit()
         return True
     except Exception as e:
