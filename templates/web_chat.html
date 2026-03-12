@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Meeting Assistant</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --primary: #3b82f6;
+            --text: #f1f5f9;
+            --glass: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
+            color: var(--text);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 400px;
+            height: 600px;
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* ✅ تحديث الهيدر لإضافة زر الخروج */
+        .header {
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            /* تغيير العرض ليفصل العنوان عن الزر */
+            display: flex;
+            justify-content: space-between; 
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header h2 { margin: 0; font-size: 1.2rem; display: flex; align-items: center; gap: 10px; }
+        .header i { color: var(--primary); }
+
+        /* ✅ ستايل زر الخروج الجديد */
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #ef4444; /* لون أحمر */
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: 0.2s;
+            padding: 5px;
+        }
+        .logout-btn:hover { transform: scale(1.1); color: #ff6b6b; }
+
+        .chat-area {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .bot-msg {
+            background: var(--glass);
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .user-msg {
+            background: var(--primary);
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
+
+        .input-area {
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            background: var(--glass);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-radius: 10px;
+            color: white;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-mic {
+            background: var(--glass);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-mic:hover { background: rgba(255, 255, 255, 0.1); }
+        .btn-mic.recording { background: #ef4444; color: white; animation: pulse 1.5s infinite; }
+
+        .login-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .login-box {
+            width: 80%;
+            text-align: center;
+        }
+        
+        button.primary-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        
+        .message strong { color: #60a5fa; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- شاشة تسجيل الدخول -->
+        <div id="login-screen" class="login-overlay">
+            <div class="login-box">
+                <i class="fas fa-robot fa-3x" style="color: var(--primary); margin-bottom: 20px;"></i>
+                <h3>Welcome Back</h3>
+                <p style="color: #94a3b8; font-size: 0.9rem;">Enter your email to access your assistant</p>
+                <input type="email" id="email-input" placeholder="name@example.com" style="width: 90%;">
+                <button class="primary-btn" onclick="login()">Start Chatting</button>
+            </div>
+        </div>
+
+        <!-- الهيدر -->
+        <div class="header">
+            <h2><i class="fas fa-check-circle"></i> TODO Assistant</h2>
+            <!-- ✅ زر تسجيل الخروج -->
+            <button class="logout-btn" onclick="logout()" title="Logout">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+        </div>
+
+        <!-- منطقة الشات -->
+        <div class="chat-area" id="chat-box">
+            <div class="message bot-msg">
+                Hello! 👋 I'm ready to help you manage your meetings.
+            </div>
+        </div>
+
+        <!-- منطقة الإدخال -->
+        <div class="input-area">
+            <input type="text" id="msg-input" placeholder="Type a message..." autocomplete="off">
+            <button class="btn-mic" id="record-btn"><i class="fas fa-microphone"></i></button>
+        </div>
+    </div>
+
+    <script>
+        let userEmail = localStorage.getItem('smart_bot_email');
+        const chatBox = document.getElementById('chat-box');
+        const msgInput = document.getElementById('msg-input');
+        const recordBtn = document.getElementById('record-btn');
+        let mediaRecorder;
+        let audioChunks = [];
+
+        // التحقق من الدخول
+        if (userEmail) {
+            document.getElementById('login-screen').style.display = 'none';
+        }
+
+        function login() {
+            const email = document.getElementById('email-input').value.trim().toLowerCase();
+            if (email && email.includes('@')) {
+                userEmail = email;
+                localStorage.setItem('smart_bot_email', email);
+                document.getElementById('login-screen').style.display = 'none';
+                // رسالة ترحيبية صغيرة عند الدخول
+                addMessage(`🔑 Logged in as: ${email}`, false);
+            } else {
+                alert('Please enter a valid email');
+            }
+        }
+
+        // ✅ دالة تسجيل الخروج الجديدة
+        function logout() {
+            localStorage.removeItem('smart_bot_email');
+            location.reload(); // إعادة تحميل الصفحة لإظهار شاشة الدخول
+        }
+
+        function addMessage(text, isUser = false) {
+            const div = document.createElement('div');
+            div.className = `message ${isUser ? 'user-msg' : 'bot-msg'}`;
+            div.innerHTML = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const text = msgInput.value.trim();
+            if (!text) return;
+
+            addMessage(text, true);
+            msgInput.value = '';
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text, email: userEmail })
+                });
+                const data = await response.json();
+                addMessage(data.reply);
+            } catch (error) {
+                addMessage("⚠️ Error connecting to server.");
+            }
+        }
+
+        msgInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        // --- منطق تسجيل الصوت (تم الحفاظ على الإصلاح الخاص بك) ---
+        recordBtn.addEventListener('mousedown', startRecording);
+        recordBtn.addEventListener('mouseup', stopRecording);
+        recordBtn.addEventListener('touchstart', startRecording);
+        recordBtn.addEventListener('touchend', stopRecording);
+
+        async function startRecording(e) {
+            e.preventDefault();
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                
+                const options = { mimeType: 'audio/webm' };
+                if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+                    console.warn("audio/webm not supported, falling back to default");
+                    mediaRecorder = new MediaRecorder(stream);
+                } else {
+                    mediaRecorder = new MediaRecorder(stream, options);
+                }
+
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = event => {
+                    if (event.data.size > 0) {
+                        audioChunks.push(event.data);
+                    }
+                };
+
+                mediaRecorder.onstop = async () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    sendAudio(audioBlob);
+                };
+
+                mediaRecorder.start();
+                recordBtn.classList.add('recording');
+            } catch (err) {
+                console.error("Error accessing mic:", err);
+                alert("Could not access microphone.");
+            }
+        }
+
+        function stopRecording(e) {
+            e.preventDefault();
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+                recordBtn.classList.remove('recording');
+            }
+        }
+
+        async function sendAudio(blob) {
+            const formData = new FormData();
+            formData.append("file", blob, "recording.webm");
+            formData.append("email", userEmail);
+
+            // إضافة رسالة انتظار
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'message user-msg';
+            loadingDiv.innerText = '🎤 Sending...';
+            chatBox.appendChild(loadingDiv);
+
+            try {
+                const response = await fetch('/api/voice', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                
+                loadingDiv.remove(); // حذف رسالة الانتظار
+                if(data.message) addMessage(data.message, true);
+                addMessage(data.reply);
+                
+            } catch (error) {
+                loadingDiv.innerText = "⚠️ Error processing voice.";
+            }
+        }
+    </script>
+</body>
+</html>

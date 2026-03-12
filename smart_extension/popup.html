@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Meeting Assistant</title>
+    <!-- استدعاء مكتبة الأيقونات (FontAwesome) للأيقونات الجميلة -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- ربط ملف التصميم -->
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+
+    <div class="container">
+        
+        <!-- 1. شاشة تسجيل الدخول (تظهر فقط إذا لم يكن المستخدم مسجلاً) -->
+        <div id="login-screen" class="login-overlay">
+            <div class="login-box">
+                <i class="fas fa-robot fa-3x" style="color: #3b82f6; margin-bottom: 20px;"></i>
+                <h3>Welcome Back</h3>
+                <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 15px;">Login via Email</p>
+                <input type="email" id="email-input" placeholder="name@example.com">
+                <button id="login-btn" class="primary-btn">Enter Ecosystem</button>
+            </div>
+        </div>
+
+        <!-- 2. الهيدر (يحتوي على العنوان وزر الخروج) -->
+        <div class="header">
+            <h2><i class="fas fa-check-circle"></i> TODO Assistant</h2>
+            <button id="logout-btn" class="logout-btn" title="Logout">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+        </div>
+
+        <!-- 3. منطقة الشات (حيث تظهر الرسائل) -->
+        <div class="chat-area" id="chat-box">
+            <div class="message bot-msg">
+                Hello! 👋 I'm ready to manage your schedule.
+            </div>
+        </div>
+
+        <!-- 4. منطقة الإدخال (النص والمايكروفون) -->
+        <div class="input-area">
+            <input type="text" id="msg-input" placeholder="Type or hold mic..." autocomplete="off">
+            <button class="btn-mic" id="record-btn" title="Hold to record">
+                <i class="fas fa-microphone"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- ربط ملف الجافاسكريبت (المسؤول عن المنطق والاتصال بالسيرفر) -->
+    <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+:root {
+    --bg-color: #0f172a;
+    --card-bg: rgba(30, 41, 59, 0.95); /* زيادة التعتيم للقراءة */
+    --primary: #3b82f6;
+    --text: #f1f5f9;
+    --glass: rgba(255, 255, 255, 0.05);
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text);
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 0;
+    width: 380px;  /* عرض ثابت للإضافة */
+    height: 550px; /* طول ثابت للإضافة */
+    overflow: hidden;
+}
+
+.container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: var(--card-bg);
+}
+
+.header {
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.header h2 { margin: 0; font-size: 1rem; color: white; display: flex; gap: 8px; }
+.header i { color: var(--primary); }
+
+.logout-btn {
+    background: none; border: none; color: #ef4444; cursor: pointer; font-size: 1.1rem;
+}
+.logout-btn:hover { transform: scale(1.1); }
+
+.chat-area {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.message {
+    max-width: 85%;
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+.bot-msg { background: var(--glass); align-self: flex-start; border: 1px solid rgba(255,255,255,0.05); }
+.user-msg { background: var(--primary); align-self: flex-end; }
+
+.input-area {
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.3);
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+input[type="text"] {
+    flex: 1;
+    background: var(--glass);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 10px;
+    border-radius: 8px;
+    color: white;
+    outline: none;
+}
+
+.btn-mic {
+    background: var(--glass);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex; justify-content: center; align-items: center;
+}
+.btn-mic.recording { background: #ef4444; animation: pulse 1.5s infinite; }
+
+.login-overlay {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: #0f172a;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    z-index: 100;
+}
+
+.login-box { width: 80%; text-align: center; }
+.login-box input { width: 90%; margin: 10px 0; padding: 10px; border-radius: 5px; border: 1px solid #334155; background: #1e293b; color: white; }
+.primary-btn { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; width: 100%; margin-top: 5px;}
+
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+.message strong { color: #60a5fa; font-weight: bold; }

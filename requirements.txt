@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+python-telegram-bot
+dateparser
+pandas
+jinja2
+python-multipart
+google-api-python-client
+google-auth-oauthlib
+python-dotenv
+google-auth-httplib2
